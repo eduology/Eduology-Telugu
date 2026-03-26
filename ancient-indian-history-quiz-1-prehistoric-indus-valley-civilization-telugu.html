@@ -1,0 +1,383 @@
+<style>
+  /* Container Styling - No Borders */
+  .edu-top-nav {
+    background: transparent;
+    padding: 10px 0;
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* H2 Navigation Styling - Pure Black & Bold */
+  h2.nav-container {
+    margin: 0;
+    padding: 0;
+    font-size: 17px; 
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    line-height: 1.4;
+    border: none !important; /* Ensures no borders appear */
+  }
+
+  /* Links Styling - Solid Black */
+  h2.nav-container a {
+    text-decoration: none;
+    color: #000000 !important; 
+    font-weight: 800; 
+    transition: 0.2s ease-in-out;
+  }
+
+  /* Hover Effect */
+  h2.nav-container a:hover {
+    color: #ff6600 !important; /* Eduology Orange */
+    text-decoration: underline;
+  }
+
+  /* Separator Styling */
+  .divider {
+    color: #333333; /* Darker separators for better visibility */
+    font-weight: 400;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 600px) {
+    h2.nav-container {
+      font-size: 15px;
+      gap: 10px;
+    }
+    .divider { display: none; } 
+  }
+</style>
+<!-- END TOP POST NAVIGATION -->
+
+
+
+<div id="quiz-wrapper" style="max-width: 600px; margin: auto; font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; border: 2px solid #333; border-radius: 12px; background: #ffffff; color: #000000;">
+    
+    <div id="quiz"></div>
+    <div id="result" style="text-align: center; font-weight: bold; margin-top: 20px; color: #000;"></div>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <button id="nextBtn" onclick="nextQuestion()" style="display: none; padding: 12px 25px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Next Question ➔</button>
+        <button id="restartBtn" onclick="restartQuiz()" style="display: none; padding: 12px 25px; background: #004a99; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Restart Quiz ↻</button>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="correctSound" src="https://learnedualogy.github.io/Learn-Edualogy/sound-correct.mp3"></audio>
+    <audio id="wrongSound" src="https://learnedualogy.github.io/Learn-Edualogy/sound-wrong.mp3"></audio>
+    <audio id="timerSound" src="https://learnedualogy.github.io/Learn-Edualogy/"></audio>
+</div>
+
+<style>
+    /* Question Styling - Solid Black */
+    .question { 
+        font-size: 1.25em; 
+        font-weight: 700; 
+        color: #FFA500 !important; 
+        margin-bottom: 20px; 
+        line-height: 1.5;
+        text-align: center;
+    }
+
+    /* Answers Styling - Solid Black */
+    .answers label { 
+        display: block; 
+        background: #ffffff; 
+        padding: 15px; 
+        margin-bottom: 10px; 
+        border: 2px solid #000000; 
+        border-radius: 8px; 
+        cursor: pointer; 
+        transition: 0.2s; 
+        color: #000000 !important; 
+        font-weight: 600;
+        font-size: 1.1em;
+    }
+
+    .answers label:hover { 
+        background: #f0f0f0; 
+        border-color: #ff6600;
+    }
+
+    /* Feedback Colors */
+    .correct { 
+        background: #d4edda !important; 
+        border-color: #28a745 !important; 
+        color: #155724 !important; 
+    }
+    .wrong { 
+        background: #f8d7da !important; 
+        border-color: #dc3545 !important; 
+        color: #721c24 !important; 
+    }
+
+    .timer { 
+        float: top; 
+        font-size: 1.5em; 
+        color: #ff0000; 
+        font-weight: 800; 
+        border: 0px solid #ff0000; 
+        padding: 5px; 
+        min-width: 35px; 
+        text-align: center; 
+        border-radius: 50%;
+    }
+</style>
+
+<script>
+    const questions = [
+        {
+            question: "భారతదేశంలో 'పురావస్తు శాస్త్ర పితామహుడు' అని ఎవరిని పిలుస్తారు?",
+            answers: ["జాన్ మార్షల్", "అలెగ్జాండర్ కన్నింగ్‌హామ్", "మార్టిమర్ వీలర్", "జేమ్స్ ప్రిన్సెప్"],
+            correct: 1
+        },
+      
+      {
+            question: "మానవుడు మొదటిసారిగా ఉపయోగించిన లోహం ఏది?",
+            answers: ["ఇనుము", "బంగారం", "రాగి", "వెండి"],
+            correct: 2
+        },
+      
+      {
+            question: "పాత రాతియుగం (Paleolithic) నాటి గీత చిత్రాలకు ప్రసిద్ధి చెందిన 'భీమ్ బెట్కా' గుహలు ఏ రాష్ట్రంలో ఉన్నాయి?",
+            answers: ["ఉత్తరప్రదేశ్", "రాజస్థాన్", "మధ్యప్రదేశ్", "గుజరాత్"],
+            correct: 2
+        },
+      
+      {
+            question: "'మెహర్‌ఘర్' (Mehergarh) ఏ కాలానికి చెందిన ముఖ్యమైన పురావస్తు స్థావరం?",
+            answers: ["పాత రాతియుగం", "మధ్య రాతియుగం", "కొత్త రాతియుగం", "ఇనుప యుగం"],
+            correct: 2
+        },
+      
+      {
+            question: "సూక్ష్మ శిలాయుధాలు (Microliths) ఏ కాలం నాటి ప్రధాన లక్షణం?",
+            answers: ["మెసోలిథిక్", "పాలియోలిథిక్", "నియోలిథిక్", "చాల్కోలిథిక్"],
+            correct: 0
+        },
+      
+      {
+            question: "సింధు లోయ నాగరికతను మొదటిసారిగా కనుగొన్న సంవత్సరం ఏది?",
+            answers: ["1919", "1921", "1924", "1930"],
+            correct: 1
+        },
+      
+      {
+            question: "హరప్పా నగరం ఏ నది ఒడ్డున ఉంది?",
+            answers: ["సింధు", "సట్లెజ్", "ఘగ్గర్", "రావి"],
+            correct: 3
+        },
+      
+      {
+            question: "మృతుల దిబ్బ (Mound of the Dead) అని ఏ నగరాన్ని పిలుస్తారు?",
+            answers: ["హరప్పా", "కాళీబంగన్", "మొహంజొదారో", "లోథల్"],
+            correct: 2
+        },
+      
+      {
+            question: "సింధు నాగరికత కాలంలో ప్రసిద్ధ ఓడరేవు నగరం ఏది?",
+            answers: ["ధోలవీర", "లోథల్", "సుర్కోటడ", "చన్హుదారో"],
+            correct: 1
+        },
+      
+      {
+            question: "సింధు ప్రజలు ఆరాధించిన ముఖ్యమైన దైవం ఎవరు?",
+            answers: ["ఇంద్రుడు", "విష్ణువు", "పశుపతి", "వరుణుడు"],
+            correct: 2
+        },
+      
+      {
+            question: "సింధు నాగరికతలో 'మహా స్నానవాటిక' (Great Bath) ఎక్కడ బయల్పడింది?",
+            answers: ["హరప్పా", "మొహంజొదారో", "రాఖీగఢీ", "రోపార్"],
+            correct: 1
+        },
+      
+      {
+            question: "క్రింది వాటిలో సింధు ప్రజలకు తెలియని జంతువు ఏది?",
+            answers: ["ఎద్దు", "ఏనుగు", "గుర్రం", "కుక్క"],
+            correct: 2
+        },
+      
+      {
+            question: "సింధు ప్రజల లిపి (Script) ఏ రకానికి చెందినది?",
+            answers: ["బ్రాహ్మీ లిపి", "దేవనాగరి", "ఖరోష్ఠి లిపి", "బొమ్మల లిపి"],
+            correct: 3
+        },
+      
+      {
+            question: "నల్లని గాజులు అని అర్థం వచ్చే సింధు స్థావరం ఏది?",
+            answers: ["బన్వాలీ", "కాళీబంగన్", "లోథల్", "ధోలవీర"],
+            correct: 1
+        },
+      
+      {
+            question: "జల నిర్వహణ వ్యవస్థకు ప్రసిద్ధి చెందిన నగరం ఏది?",
+            answers: ["మొహంజొదారో", "హరప్పా", "ధోలవీర", "లోథల్"],
+            correct: 2
+        },
+      
+      {
+            question: "సింధు నాగరికత ఏ యుగానికి చెందినది?",
+            answers: ["కాంస్య యుగం", "ఇనుప యుగం", "పాత రాతియుగం", "ఏదీ కాదు"],
+            correct: 0
+        },
+      
+      {
+            question: "సింధు ప్రజలు వాడిన కొలతలు ఏ సంఖ్య గుణిజాలుగా ఉండేవి?",
+            answers: ["10", "12", "16", "20"],
+            correct: 2
+        },
+      
+      {
+            question: "హరప్పా నాగరికత అంతానికి గల ప్రధాన కారణం 'వరదలు' అని పేర్కొన్నది ఎవరు?",
+            answers: ["మార్టిమర్ వీలర్", "రాబర్ట్ రైక్స్", "ఎస్.ఆర్. రావు", "బి.కె. థాపర్"],
+            correct: 1
+        },
+      
+      {
+            question: "సింధు ముద్రికలు (Seals) ఎక్కువగా దేనితో చేయబడ్డాయి?",
+            answers: ["స్టీయటైట్", "టెర్రాకోటా", "బంగారం", "ఇనుము"],
+            correct: 0
+        },
+      
+      {
+            question: "కోట (Citadel) లేని ఏకైక సింధు నగరం ఏది?",
+            answers: ["కాళీబంగన్", "హరప్పా", "ధోలవీర", "చన్హుదారో"],
+            correct: 3
+        },
+      
+      {
+            question: "పత్తిని మొదటిసారిగా పండించిన ప్రపంచ నాగరికత ఏది?",
+            answers: ["మెసొపొటేమియా", "ఈజిప్ట్", "సింధు లోయ నాగరికత", "చైనా"],
+            correct: 2
+        },
+      
+      {
+            question: "హరప్పా ప్రజలు ఏ దేశంతో విదేశీ వాణిజ్యం నిర్వహించేవారు?",
+            answers: ["మెసొపొటేమియా", "రోమ్", "గ్రీస్", "శ్రీలంక"],
+            correct: 0
+        },
+      
+      {
+            question: "ఎముకలతో చేసిన పనిముట్లు అత్యధికంగా దొరికిన నియోలిథిక్ ప్రాంతం ఏది?",
+            answers: ["బుర్జాహోమ్", "చిరాండ్", "కోల్దివా", "బ్రహ్మగిరి"],
+            correct: 1
+        },
+      
+      {
+            question: "అగ్ని గుండాలు (Fire Altars) ఏ నగరంలో బయల్పడ్డాయి?",
+            answers: ["మొహంజొదారో", "హరప్పా", "కాళీబంగన్", "లోథల్"],
+            correct: 2
+        },
+      
+      {
+            question: "సింధు నాగరికత విస్తీర్ణం ఏ ఆకారంలో ఉండేది?",
+            answers: ["చతురస్రం", "వృత్తం", "త్రిభుజాకారం", "దీర్ఘచతురస్రం"],
+            correct: 2
+        }
+    ];
+
+    let currentQuestion = 0;
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let timerInterval;
+
+    function playSound(id) {
+        const sound = document.getElementById(id);
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log("Audio play blocked"));
+        }
+    }
+
+    function showQuestion() {
+        clearInterval(timerInterval);
+        document.getElementById('nextBtn').style.display = 'none';
+        const q = questions[currentQuestion];
+        const quizDiv = document.getElementById('quiz');
+        quizDiv.innerHTML = `
+            <div class="question-block">
+                <div class="timer" id="timer">20</div>
+                <div class="question">${currentQuestion + 1}. ${q.question}</div>
+                <div class="answers">
+                    ${q.answers.map((a, i) => `
+                        <label onclick="selectAnswer(${i})" id="opt${i}">${a}</label>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        startTimer(20);
+    }
+
+    function startTimer(seconds) {
+        let timeLeft = seconds;
+        const timerDiv = document.getElementById('timer');
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerDiv.textContent = timeLeft;
+            if (timeLeft <= 5) playSound('timerSound');
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                selectAnswer(-1); 
+            }
+        }, 1000);
+    }
+
+    function selectAnswer(selected) {
+        clearInterval(timerInterval);
+        const q = questions[currentQuestion];
+        
+        q.answers.forEach((_, i) => {
+            const label = document.getElementById(`opt${i}`);
+            label.style.pointerEvents = 'none'; 
+            if (i === q.correct) label.classList.add('correct');
+            if (i === selected && selected !== q.correct) label.classList.add('wrong');
+        });
+
+        if (selected === q.correct) {
+            correctAnswers++;
+            playSound('correctSound');
+        } else {
+            wrongAnswers++;
+            playSound('wrongSound');
+        }
+        document.getElementById('nextBtn').style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz').innerHTML = '';
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('result').innerHTML = `
+            <h3 style="color:#000;">క్విజ్ పూర్తయింది!</h3>
+            <p>సరైన సమాధానాలు: ${correctAnswers}</p>
+            <p>తప్పు సమాధానాలు: ${wrongAnswers}</p>
+            <p>మొత్తం స్కోరు: ${correctAnswers} / ${questions.length}</p>
+        `;
+        document.getElementById('restartBtn').style.display = 'inline-block';
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        correctAnswers = 0;
+        wrongAnswers = 0;
+        document.getElementById('result').innerHTML = '';
+        document.getElementById('restartBtn').style.display = 'none';
+        showQuestion();
+    }
+
+    showQuestion();
+</script>
